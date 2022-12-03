@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define INT_MIN -2147483647
+#include <windows.h>
 #define MAXHEAP 1
-#define MINHEAP 0
+#define MINHEAP 2
 
 typedef int element;
 
@@ -21,7 +21,7 @@ void swap(element* x, element* y)
 
 void buildHeap(element* arr, int type)
 {
-    for(int i = arr[0] / 2; i >= 0; i--)
+    for(int i = arr[0] / 2; i > 0; i--)
         heapify(arr, i, type);
 }
 
@@ -42,6 +42,7 @@ void heapify(element* arr,  int target, int type)
         else
             optChild = arr[leftChild] < arr[rightChild] ? leftChild : rightChild;
     }
+
     if(type == MAXHEAP){
         if(arr[optChild] > arr[target]){
             swap(&arr[target], &arr[optChild]);
@@ -61,7 +62,7 @@ element extract(element* arr, int type)
     int size = arr[0];
     if(size == 0){
         printf("Heap is Empty.\n");
-        return;
+        return 0;
     }
 
     arr[0]--;
@@ -73,57 +74,66 @@ element extract(element* arr, int type)
 
 void heapSort(element* arr, int type)
 {
+    int size = arr[0];
     buildHeap(arr, type);
     while(arr[0] != 0){
         extract(arr, type);
     }
+    arr[0] = size;
 }
 
-int printCommands()
+void PrintData(element* arr){
+    if(arr[0] == 0){
+        printf(" ** empty now **\n");
+    }
+    else{
+        printf("[[ ");
+        for(int i = 1; i <= arr[0]; ++i){
+            printf("%d, ", arr[i]);
+        }
+        printf("\b ]]\n");
+    }
+}
+
+int printCommands(element* arr)
 {
-    printf("1. Insert Data\n");
-    printf("2. Print Current Data\n");
-    printf("3. Sort Current Data in Increasing Order\n");
-    printf("4. Sort Current Data in Decreasing Order\n");
-    printf("5. Clear\n");
-    printf("6. Quit\n");
-    int ret;
-    scanf_s("%d ", &ret);
-    return ret;
+    printf("\nCurrent Data : ");
+    PrintData(arr);
+    printf("\n== Enter the Commands Below ==\n");
+    printf("  1. Insert Data\n");
+    printf("  2. Sort Current Data in Increasing Order\n");
+    printf("  3. Sort Current Data in Decreasing Order\n");
+    printf("  4. Clear\n");
+    printf("  5. Quit\n");
 }
 
 void InsertData(element* arr){
     int N;
     
     printf("Enter the size of Input : ");
-    scanf_s("%d ", &N);
+    scanf_s("%d", &N);
 
     for(int i = 1; i <= N; ++i){
-        scanf_s("%d ", &arr[arr[0] + i]);
+        scanf_s("%d", &arr[arr[0] + i]);
     }
     arr[0] += N;
 }
 
-void PrintData(element* arr){
-    for(int i = 1; i <= arr[0]; ++i){
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
-}
-
 int main(void){
-
     int command = 0;
     element arr[1000];
     arr[0] = 0;
-    while(command != 6){
-        command = printCommands();
+    while(command != 5){
+        printCommands(arr);
+        printf("\nCommand : ");
+        scanf_s("%d", &command);
         switch(command){
-            case 1 : InsertData(arr);       break;
-            case 2 : PrintData(arr);        break;
-            case 3 : heapSort(arr, MAXHEAP); break;
-            case 4 : heapSort(arr, MINHEAP); break;
-            case 5 : arr[0] = 0;            break;
+            case 1 : InsertData(arr); break;
+            case 2 : heapSort(arr, MAXHEAP); break;
+            case 3 : heapSort(arr, MINHEAP); break;
+            case 4 : arr[0] = 0; break;
         }
+        system("cls");
     }
+    printf("Thank you.\n");
 }
